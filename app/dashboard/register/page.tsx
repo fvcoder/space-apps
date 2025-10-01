@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,64 +10,101 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { schema, Schema } from "./schema";
+import { registerParticipant } from "./actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod"
-
-const schema = z.object({
-    name: z.string({ error: "Campo requerido" }).min(3, { error: "Minimo 3 caracteres"}),
-    type: z.string({ error: "Campo requerido" }),
-    package: z.string({ error: "Campo requerido" }),
-})
-
-type Schema = z.infer<typeof schema>;
 
 export default function RegisterUser() {
-    const [code, setCode] = useState();
-    const form = useForm<Schema>({ resolver: zodResolver(schema) })
+  const router = useRouter();
+  const [loadding, setLoadding] = useState(false);
+  const { control, handleSubmit, formState: { errors } } = useForm<Schema>({
+    resolver: zodResolver(schema),
+  });
 
-    function handleOnSubmit(data: Schema) {
-        console.log(data)
-    }
+  function handleOnSubmit(data: Schema) {
+    setLoadding(true)
+    toast.promise(registerParticipant(data), {
+      loading: "Registrando...",
+      success: (dta) => {
+        if (typeof dta === "string") {
+            router.push(`/dashboard/p/${dta}`)
+            setLoadding(false)
 
-    return (
-        <div className="max-w-3xl px-6 mx-auto py-4 w-full">
-            <form className="grid gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="nombre">Nombre</Label>
-                    <Input id="nombre" placeholder="Ingresa tu nombre" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="tipo">Tipo</Label>
-                        <Select>
-                            <SelectTrigger id="tipo" className="w-full">
-                                <SelectValue placeholder="Selecciona un tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="mentor">Mentor</SelectItem>
-                                <SelectItem value="voluntario">Voluntario</SelectItem>
-                                <SelectItem value="lider">Líder</SelectItem>
-                                <SelectItem value="participante">Participante</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="paquete">Paquete Adquirido</Label>
-                        <Select>
-                            <SelectTrigger id="paquete" className="w-full">
-                                <SelectValue placeholder="Selecciona un paquete" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="stela">Stela</SelectItem>
-                                <SelectItem value="erika">Erika</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <Button type="submit">Registrar</Button>
-            </form>
+            return "Registrado con éxito"
+        }
+        setLoadding(false)
+        return "Hubo un error"
+      },
+      error: () => {
+        setLoadding(false)
+        return "Error al registrar"
+      }
+    });
+  }
+
+  return (
+    <div className="max-w-3xl px-6 mx-auto py-4 w-full">
+      <form onSubmit={handleSubmit(handleOnSubmit)} className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="name">Nombre</Label>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <Input id="name" placeholder="Ingresa tu nombre" {...field} />
+            )}
+          />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
         </div>
-    )
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="type">Tipo</Label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger id="type" className="w-full">
+                    <SelectValue placeholder="Selecciona un tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mentor">Mentor</SelectItem>
+                    <SelectItem value="voluntario">Voluntario</SelectItem>
+                    <SelectItem value="lider">Líder</SelectItem>
+                    <SelectItem value="participante">Participante</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="package">Paquete Adquirido</Label>
+            <Controller
+              name="package"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger id="package" className="w-full">
+                    <SelectValue placeholder="Selecciona un paquete" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stela">Stela</SelectItem>
+                    <SelectItem value="erika">Erika</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.package && <p className="text-red-500 text-sm">{errors.package.message}</p>}
+          </div>
+        </div>
+        <Button type="submit" disabled={loadding}>Registrar</Button>
+      </form>
+    </div>
+  );
 }
