@@ -8,8 +8,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const schema = z.object({
+    name: z.string({ error: "Campo requerido" }).min(3, { error: "Minimo 3 caracteres"}),
+    type: z.string({ error: "Campo requerido" }),
+    package: z.string({ error: "Campo requerido" }),
+})
+
+type Schema = z.infer<typeof schema>;
 
 export default function RegisterUser() {
+    const [code, setCode] = useState();
+    const form = useForm<Schema>({ resolver: zodResolver(schema) })
+
+    function handleOnSubmit(data: Schema) {
+        console.log(data)
+    }
+
     return (
         <div className="max-w-3xl px-6 mx-auto py-4 w-full">
             <form className="grid gap-4">
