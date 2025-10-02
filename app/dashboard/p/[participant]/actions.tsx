@@ -37,3 +37,36 @@ export async function assignFeature(props: assignFeatureProps) {
 
     return res.id;
 }
+
+export async function assignCodeQR(participantId: string, code: string) {
+    const participantWithCode = await prisma.participant.findFirst({
+        where: {
+            code
+        }
+    })
+    if (participantWithCode) {
+        return "Código ya asignado a otro participante";
+    }
+    const participant = await prisma.participant.findFirst({
+        where: {
+            id: participantId
+        }
+    })
+    if (!participant) {
+        return "Participante no encontrado";
+    }
+    if (participant.code) {
+        return "El participante ya tiene un código asignado";
+    }
+
+    await prisma.participant.update({
+        data: {
+            code
+        },
+        where: {
+            id: participantId
+        }
+    })
+    
+    return true;
+}
