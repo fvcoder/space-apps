@@ -21,27 +21,27 @@ import { useState } from "react";
 
 export default function RegisterUser() {
   const router = useRouter();
-  const [loadding, setLoadding] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { control, handleSubmit, formState: { errors } } = useForm<Schema>({
     resolver: zodResolver(schema),
   });
 
   function handleOnSubmit(data: Schema) {
-    setLoadding(true)
+    setLoading(true)
     toast.promise(registerParticipant(data), {
       loading: "Registrando...",
       success: (dta) => {
         if (typeof dta === "string") {
             router.push(`/dashboard/p/${dta}`)
-            setLoadding(false)
+            setLoading(false)
 
             return "Registrado con éxito"
         }
-        setLoadding(false)
+        setLoading(false)
         return "Hubo un error"
       },
       error: () => {
-        setLoadding(false)
+        setLoading(false)
         return "Error al registrar"
       }
     });
@@ -103,7 +103,7 @@ export default function RegisterUser() {
             {errors.package && <p className="text-red-500 text-sm">{errors.package.message}</p>}
           </div>
         </div>
-        <Button type="submit" disabled={loadding}>Registrar</Button>
+        <Button type="submit" disabled={loading}>Registrar</Button>
       </form>
     </div>
   );
