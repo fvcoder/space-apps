@@ -18,6 +18,7 @@ import { registerParticipant } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { textVariants } from "@/style/text";
 
 export default function RegisterUser() {
   const router = useRouter();
@@ -48,7 +49,11 @@ export default function RegisterUser() {
   }
 
   return (
-    <div className="max-w-3xl px-6 mx-auto py-4 w-full">
+    <div className="max-w-3xl px-6 mx-auto py-4 w-full space-y-4">
+      <header>
+        <h1 className={textVariants({ size: "h3" })}>Registra un participante</h1>
+        <p className={textVariants({ color: "secondary" })}>Rellena el formulario</p>
+      </header>
       <form onSubmit={handleSubmit(handleOnSubmit)} className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="name">Nombre</Label>

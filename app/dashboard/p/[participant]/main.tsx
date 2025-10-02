@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { textVariants } from "@/style/text";
-import { IconCheck } from "@tabler/icons-react"
+import { Icon, IconBowlSpoon, IconCheck, IconProps, IconShirt, IconToolsKitchen, IconToolsKitchen2 } from "@tabler/icons-react"
 import { assignCodeQR, assignFeature } from "./actions";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { ForwardRefExoticComponent, RefAttributes, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 
 export interface ParticipantData {
@@ -31,9 +31,11 @@ interface featureItemProps {
     feature: string
     title: string,
     date?: string
+    icon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>
+    iconColor: string;
 }
 
-function FeatureItem({ title, date, feature }: featureItemProps) {
+function FeatureItem({ title, date, feature, icon: Icon, iconColor }: featureItemProps) {
     const [dateAssigned, setDateAssigned] = useState(date);
     const session = useSession();
     const params = useParams();
@@ -62,6 +64,9 @@ function FeatureItem({ title, date, feature }: featureItemProps) {
     return (
         <Card>
             <CardContent className="flex items-center justify-between">
+                <div className="mr-2">
+                    <Icon style={{ color: iconColor }} />
+                </div>
                 <div className="flex-1">
                     <h3 className={textVariants({})}>{title}</h3>
                     {dateAssigned && <p className="text-sm text-muted-foreground">Entregado el {new Date(dateAssigned).toLocaleDateString("es-BO", { hour: "2-digit", minute: "2-digit"})}</p>}
@@ -90,8 +95,8 @@ export function ParticipantMain(props: { data: ParticipantData }) {
             <div className="max-w-3xl mx-auto px-6 py-4 w-full flex-1 flex flex-col gap-4">
                 <section>
                     <div className="text-center">
-                        <h1 className={textVariants({ size: "h3" })}>Asignar QR a {data.name}</h1>
-                        <p className="capitalize mt-2">Escanea el QR para asignarlo a este usuario</p>
+                        <h1 className={textVariants({ size: "h3" })}>{data.name}</h1>
+                        <p className="capitalize mt-2">Escanea un QR para asignarlo a este usuario</p>
                     </div>
                 </section>
                 <section className="flex-1 relative">
@@ -132,7 +137,7 @@ export function ParticipantMain(props: { data: ParticipantData }) {
                         {state === 'idle' && 'Escaneando'}
                         {state === 'verifying' && 'Verificando'}
                         {state === 'success' && 'QR Válido'}
-                        {state === 'error' && `QR No Válido: ${code}`}
+                        {state === 'error' && `QR ya esta asignado: ${code}`}
                     </div>
                 </section>
             </div>
@@ -148,11 +153,11 @@ export function ParticipantMain(props: { data: ParticipantData }) {
                 </div>
             </section>
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FeatureItem title="Accesorios" feature="extra" date={data.extra.date ?? undefined} />
-                <FeatureItem title="Almuerzo dia 1" feature="launch1" date={data.launch1.date ?? undefined} />
-                <FeatureItem title="Cena" feature="dinner" date={data.dinner.date ?? undefined} />
-                <FeatureItem title="Desayuno" feature="breakfast" date={data.breakfast.date ?? undefined} />
-                <FeatureItem title="Almuerzo dia 2" feature="launch2" date={data.launch2.date ?? undefined} />
+                <FeatureItem iconColor="#4285F4" icon={IconShirt} title="Accesorios" feature="extra" date={data.extra.date ?? undefined} />
+                <FeatureItem iconColor="#EA4335" icon={IconToolsKitchen2} title="Almuerzo dia 1" feature="launch1" date={data.launch1.date ?? undefined} />
+                <FeatureItem iconColor="#FBBC05" icon={IconToolsKitchen} title="Cena" feature="dinner" date={data.dinner.date ?? undefined} />
+                <FeatureItem iconColor="#34A853" icon={IconBowlSpoon} title="Desayuno" feature="breakfast" date={data.breakfast.date ?? undefined} />
+                <FeatureItem iconColor="#673AB7" icon={IconToolsKitchen2} title="Almuerzo dia 2" feature="launch2" date={data.launch2.date ?? undefined} />
             </section>
         </div>
     );

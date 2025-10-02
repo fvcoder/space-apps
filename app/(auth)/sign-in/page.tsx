@@ -19,12 +19,12 @@ export default function Page() {
 					<Tabs
 						tabs={[
 							{
-								title: "Sign In",
+								title: "Iniciar Sesión",
 								value: "sign-in",
 								content: <SignIn />,
 							},
 							{
-								title: "Sign Up",
+								title: "Registrate",
 								value: "sign-up",
 								content: <SignUp />,
 							},

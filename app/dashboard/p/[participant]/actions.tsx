@@ -23,8 +23,6 @@ export async function assignFeature(props: assignFeatureProps) {
     const data: Record<string, any> = {}
     data[props.feature] = { userId: props.userId, date: new Date().toISOString() }
 
-    console.log(data)
-
     const res = await prisma.participant.update({
         select: {
             id: true

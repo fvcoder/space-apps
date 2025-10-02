@@ -37,6 +37,9 @@ export default function ScanPage() {
                     })
                 }}
                 formats={["qr_code"]}
+                classNames={{
+                    container: "!aspect-auto"
+                }}
              />
             <div className={cn("absolute top-0 inset-x-0 h-10 flex items-center justify-center", {
                 'bg-white text-black': state === 'idle',

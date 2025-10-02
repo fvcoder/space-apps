@@ -19,7 +19,7 @@ export const textVariants = tv({
     },
     color: {
       primary: "text-label",
-      secondary: "text-label-secondary",
+      secondary: "text-label-secondary text-zinc-500",
       tertiary: "text-label-tertiary",
       quaternary: "text-quaternary-label",
     },

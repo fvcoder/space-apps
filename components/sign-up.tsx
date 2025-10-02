@@ -86,18 +86,18 @@ export function SignUp() {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							autoComplete="new-password"
-							placeholder="Password"
+							placeholder="contraseña"
 						/>
 					</div>
 					<div className="grid gap-2">
-						<Label htmlFor="password">repite la contraseña</Label>
+						<Label htmlFor="password">Repite la contraseña</Label>
 						<Input
 							id="password_confirmation"
 							type="password"
 							value={passwordConfirmation}
 							onChange={(e) => setPasswordConfirmation(e.target.value)}
 							autoComplete="new-password"
-							placeholder="Confirm Password"
+							placeholder="repite tu contraseña"
 						/>
 					</div>
 					<Button
@@ -116,7 +116,7 @@ export function SignUp() {
 											toast.error(ctx.error.message);
 										},
 										onSuccess: async () => {
-											toast.success("Successfully signed up");
+											toast.success("Registrado exitosamente");
 											router.push(getCallbackURL(params));
 										},
 									},

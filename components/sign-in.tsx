@@ -61,7 +61,6 @@ export default function SignIn() {
 						<Input
 							id="password"
 							type="password"
-							placeholder="password"
 							autoComplete="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
@@ -78,7 +77,7 @@ export default function SignIn() {
 									{ email, password, rememberMe },
 									{
 										onSuccess(context) {
-											toast.success("Successfully signed in");
+											toast.success("Se ha iniciado sesión correctamente");
 											router.push(getCallbackURL(params));
 										},
 										onError(context) {

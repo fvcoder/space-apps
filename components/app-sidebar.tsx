@@ -14,6 +14,7 @@ import {
   IconSearch,
   IconSettings,
   IconCamera,
+  IconTicket,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -49,6 +50,11 @@ const data = {
       title: "Escanear QR",
       url: "/dashboard/scan",
       icon: IconCamera,
+    },
+    {
+      title: "Registrar Evento",
+      url: "/dashboard/event",
+      icon: IconTicket,
     }
   ],
   navClouds: [
