@@ -81,6 +81,8 @@ model participant {
   launch2   Json @default("{}")
   extra     Json @default("{}")
 
+  codeDate DateTime?
+
   createAt DateTime @default(now())
   updateAt DateTime @default(now()) @updatedAt
 

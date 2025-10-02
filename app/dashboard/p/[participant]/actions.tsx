@@ -59,7 +59,8 @@ export async function assignCodeQR(participantId: string, code: string) {
 
     await prisma.participant.update({
         data: {
-            code
+            code,
+            codeDate: new Date()
         },
         where: {
             id: participantId
