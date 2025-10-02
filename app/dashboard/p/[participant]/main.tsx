@@ -68,10 +68,10 @@ function FeatureItem({ title, date, feature }: featureItemProps) {
                 </div>
                 <div>
                     <button className={cn("border-2 rounded size-6 transition-all flex items-center justify-center", {
-                        "hover:bg-dark/20 dark:hover:bg-white/20": !date,
-                        "bg-green-500": date
-                    })} onClick={() => !date && handleAssignFeature()} disabled={!!date}>
-                        {date && <IconCheck width={18} className="text-black" />}
+                        "hover:bg-dark/20 dark:hover:bg-white/20": !dateAssigned,
+                        "bg-green-500": dateAssigned
+                    })} onClick={() => !dateAssigned && handleAssignFeature()} disabled={!!dateAssigned}>
+                        {dateAssigned && <IconCheck width={18} className="text-black" />}
                     </button>
                 </div>
             </CardContent>
