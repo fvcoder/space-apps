@@ -94,8 +94,8 @@ export default function RegisterUser() {
                     <SelectValue placeholder="Selecciona un paquete" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="stela">Stela</SelectItem>
-                    <SelectItem value="erika">Erika</SelectItem>
+                    <SelectItem value="felicette">FÉLICETTE</SelectItem>
+                    <SelectItem value="strelka">STRELKA</SelectItem>
                   </SelectContent>
                 </Select>
               )}
