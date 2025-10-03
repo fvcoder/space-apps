@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { IconCircleCheck } from "@tabler/icons-react"
 import Link from "next/link"
-import type { participant } from "@prisma/client"
+import type { p } from "@prisma/client"
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ function normalizeText(text: string) {
   return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-export function ParticipantsTable({ data }: { data: participant[] }) {
+export function ParticipantsTable({ data }: { data: p[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25;

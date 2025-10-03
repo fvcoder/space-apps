@@ -88,3 +88,31 @@ model participant {
 
   @@map("participant")
 }
+
+model p {
+  id       String    @id @default(cuid())
+  code     String?
+  codeDate DateTime?
+  name     String
+  type     String
+  package  String
+  ci       String
+
+  items pItem[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now()) @updatedAt
+
+  @@map("p")
+}
+
+model pItem {
+  id   String  @id
+  type String
+  name String?
+  p    p       @relation(fields: [pId], references: [id])
+  pId  String
+
+  deliveredDate   DateTime?
+  deliveredUserId String?
+}

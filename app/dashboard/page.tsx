@@ -3,9 +3,9 @@ import { textVariants } from "@/style/text"
 import { ParticipantsTable } from "./table"
   
 export default async function Page() {
-  const data = await prisma.participant.findMany({ orderBy: { createAt: "desc" } });
-  const countParticipants = await prisma.participant.count({});
-  const countPresents = await prisma.participant.count({ where: { code: { not: null } } });
+  const data = await prisma.p.findMany({ orderBy: { createAt: "desc" } });
+  const countParticipants = await prisma.p.count({});
+  const countPresents = await prisma.p.count({ where: { code: { not: null } } });
 
   return (
     <div className="flex flex-1 flex-col">
