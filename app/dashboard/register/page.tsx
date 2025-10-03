@@ -101,6 +101,7 @@ export default function RegisterUser() {
                   <SelectContent>
                     <SelectItem value="felicette">FÉLICETTE</SelectItem>
                     <SelectItem value="strelka">STRELKA</SelectItem>
+                    <SelectItem value="sin paquete">Sin paquete</SelectItem>
                   </SelectContent>
                 </Select>
               )}
