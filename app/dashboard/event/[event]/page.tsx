@@ -9,7 +9,6 @@ import { useSession } from '@/lib/auth-client';
 import { AllowFeatures, registerParticipantEvent } from './actions';
 
 const allowItems = [
-    "extra",
     "launch1",
     "dinner",
     "breakfast",
@@ -40,25 +39,20 @@ export default function ScanPage() {
                     toast.promise(registerParticipantEvent(code[0].rawValue, params.event as AllowFeatures, session.data?.session.userId as string), {
                         loading: "Verificando...",
                         success: (data) => {
-                            if (typeof data === "object") {
-                                alert(`Paquete: ${data.package}`)
-                                setMessage("Registrado correctamente");
-                                setState("success");
-                                return data.message;
-                            }
                             setMessage(data);
+
                             if (data === "Evento invalido") {
                                 setState("error")
-                            }
-                            if (data === "Participante no encontrado") {
+                            }else if (data === "Participante no encontrado") {
                                 setState("error")
-                            }
-                            if (data === "Ya fue entregado") {
+                            }else if (data === "Ya fue entregado") {
+                                setState("warn")
+                            }else if (data === "Registrado correctamente") {
+                                setState("success")
+                            } else {
                                 setState("warn")
                             }
-                            if (data === "Registrado correctamente") {
-                                setState("success")
-                            }
+
                             return data;
                         },
                         error: () => {

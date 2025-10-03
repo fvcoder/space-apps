@@ -17,14 +17,12 @@ export async function registerParticipantEvent(code: string, feature: AllowFeatu
         return "Evento invalido";
     }
 
-    const participant = await prisma.participant.findFirst({
+    const participant = await prisma.p.findFirst({
         select: {
             id: true,
-            [feature]: true,
-            package: true,
         },
         where: {
-            code
+            code,
         }
     })
 
@@ -32,29 +30,34 @@ export async function registerParticipantEvent(code: string, feature: AllowFeatu
         return "Participante no encontrado"
     }
 
-    if (Object.keys(participant[feature]).length !== 0) {
-        return "Ya fue entregado"
-    }
-
-    const data: Record<string, any> = {}
-    data[feature] = { userId: userId, date: new Date().toISOString() }
-
-    await prisma.participant.update({
+    const item = await prisma.pItem.findFirst({
         select: {
-            id: true
+            id: true,
+            deliveredDate: true,  
         },
-        data,
         where: {
-            id: participant.id
+            pId: participant.id,
+            type: feature
         }
     })
 
-    if (feature === "extra") {
-        return {
-           message: "Registrado correctamente",
-           package: participant.package
-        }
+    if (!item) {
+        return "No corresponde";
     }
+
+    if (item.deliveredDate) {
+        return "Ya fue entregado"
+    }
+
+    await prisma.pItem.update({
+        data: {
+            deliveredDate: new Date,
+            deliveredUserId: userId,
+        },
+        where: {
+            id: item.id
+        }
+    })
 
     return "Registrado correctamente";
 }

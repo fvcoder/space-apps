@@ -54,7 +54,6 @@ export default function EventListPage() {
                 <p className={textVariants({ color: "secondary" })}>Para un registro masivo</p>
             </header>
             <section className="space-y-4">
-                <FeatureItemLink iconColor="#4285F4" icon={IconShirt} title="Accesorios" feature="extra"/>
                 <FeatureItemLink iconColor="#EA4335" icon={IconToolsKitchen2} title="Almuerzo dia 1" feature="launch1" />
                 <FeatureItemLink iconColor="#FBBC05" icon={IconToolsKitchen} title="Cena" feature="dinner" />
                 <FeatureItemLink iconColor="#34A853" icon={IconBowlSpoon} title="Desayuno" feature="breakfast" />
