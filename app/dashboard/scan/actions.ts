@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/auth";
 
 export async function verifyCodeQR(code: string) {
-    const participant = await prisma.participant.findFirst({
+    const participant = await prisma.p.findFirst({
         select: {
             id: true,
         },
