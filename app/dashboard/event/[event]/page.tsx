@@ -40,6 +40,12 @@ export default function ScanPage() {
                     toast.promise(registerParticipantEvent(code[0].rawValue, params.event as AllowFeatures, session.data?.session.userId as string), {
                         loading: "Verificando...",
                         success: (data) => {
+                            if (typeof data === "object") {
+                                alert(`Paquete: ${data.package}`)
+                                setMessage("Registrado correctamente");
+                                setState("success");
+                                return data.message;
+                            }
                             setMessage(data);
                             if (data === "Evento invalido") {
                                 setState("error")

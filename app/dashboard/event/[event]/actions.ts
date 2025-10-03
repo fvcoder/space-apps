@@ -20,7 +20,8 @@ export async function registerParticipantEvent(code: string, feature: AllowFeatu
     const participant = await prisma.participant.findFirst({
         select: {
             id: true,
-            [feature]: true
+            [feature]: true,
+            package: true,
         },
         where: {
             code
@@ -47,6 +48,13 @@ export async function registerParticipantEvent(code: string, feature: AllowFeatu
             id: participant.id
         }
     })
+
+    if (feature === "extra") {
+        return {
+           message: "Registrado correctamente",
+           package: participant.package
+        }
+    }
 
     return "Registrado correctamente";
 }
