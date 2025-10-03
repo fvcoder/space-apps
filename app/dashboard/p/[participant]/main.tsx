@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { ForwardRefExoticComponent, RefAttributes, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
+import { p, pItem } from "@prisma/client";
 
 export interface ParticipantData {
     id: string
@@ -27,24 +28,46 @@ export interface ParticipantData {
     updateAt: string
 }
 
+interface featureDataItem {
+    iconColor: string,
+    icon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>
+    title: string
+    feature: string
+}
+
+const featuresData: featureDataItem[] = [
+    {iconColor:"#4285F4", icon: IconShirt, title: "Accesorios", feature: "extra"},
+    {iconColor:"#EA4335", icon: IconToolsKitchen2, title: "Almuerzo dia 1", feature: "launch1"},
+    {iconColor:"#FBBC05", icon: IconToolsKitchen, title: "Cena", feature: "dinner"},
+    {iconColor:"#34A853", icon: IconBowlSpoon, title: "Desayuno", feature: "breakfast"},
+    {iconColor:"#673AB7", icon: IconToolsKitchen2, title: "Almuerzo dia 2", feature: "launch2"},
+]
+
 interface featureItemProps {
+    data: pItem
+    /*
     feature: string
     title: string,
     date?: string
     icon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>
     iconColor: string;
+    */
 }
 
-function FeatureItem({ title, date, feature, icon: Icon, iconColor }: featureItemProps) {
-    const [dateAssigned, setDateAssigned] = useState(date);
+function FeatureItem({ data }: featureItemProps) {
+    const feature = featuresData.find((f) => data.type === f.feature) as unknown as featureDataItem;
+    const [dateAssigned, setDateAssigned] = useState(data.deliveredDate ?? "");
     const session = useSession();
     const params = useParams();
 
+    if (typeof feature === "undefined") {
+        return null;
+    }
+
     function handleAssignFeature() {
         toast.promise(assignFeature({
-            participantId: params.participant as string,
-            feature,
-            userId: session.data?.user.id as string
+            userId: session.data?.user.id as string,
+            pItemId: data.id,
         }), {
             loading: "Asignando...",
             success: (data) => {
@@ -65,10 +88,10 @@ function FeatureItem({ title, date, feature, icon: Icon, iconColor }: featureIte
         <Card>
             <CardContent className="flex items-center justify-between">
                 <div className="mr-2">
-                    <Icon style={{ color: iconColor }} />
+                    <feature.icon style={{ color: feature.iconColor }} />
                 </div>
                 <div className="flex-1">
-                    <h3 className={textVariants({})}>{title}</h3>
+                    <h3 className={textVariants({})}>{feature.feature === "extra" ? data.name : feature.title}</h3>
                     {dateAssigned && <p className="text-sm text-muted-foreground">Entregado el {new Date(dateAssigned).toLocaleDateString("es-BO", { hour: "2-digit", minute: "2-digit"})}</p>}
                 </div>
                 <div>
@@ -84,8 +107,13 @@ function FeatureItem({ title, date, feature, icon: Icon, iconColor }: featureIte
     )
 }
 
-export function ParticipantMain(props: { data: ParticipantData }) {
-    const [data, setData] = useState(props.data);
+interface ParticipantMainProps {
+    participant: Pick<p, "id" | "code" | "name" | "type" | "package">
+    items: pItem[];
+}
+
+export function ParticipantMain(props: ParticipantMainProps) {
+    const [data, setData] = useState(props.participant);
     const [code, setCode] = useState("")
     const [state, setState] = useState<"idle" | "verifying" | "success" | "error">("idle");
     const params = useParams();
@@ -153,11 +181,7 @@ export function ParticipantMain(props: { data: ParticipantData }) {
                 </div>
             </section>
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FeatureItem iconColor="#4285F4" icon={IconShirt} title="Accesorios" feature="extra" date={data.extra.date ?? undefined} />
-                <FeatureItem iconColor="#EA4335" icon={IconToolsKitchen2} title="Almuerzo dia 1" feature="launch1" date={data.launch1.date ?? undefined} />
-                <FeatureItem iconColor="#FBBC05" icon={IconToolsKitchen} title="Cena" feature="dinner" date={data.dinner.date ?? undefined} />
-                <FeatureItem iconColor="#34A853" icon={IconBowlSpoon} title="Desayuno" feature="breakfast" date={data.breakfast.date ?? undefined} />
-                <FeatureItem iconColor="#673AB7" icon={IconToolsKitchen2} title="Almuerzo dia 2" feature="launch2" date={data.launch2.date ?? undefined} />
+                {props.items.map((x) => <FeatureItem data={x} />)}
             </section>
         </div>
     );

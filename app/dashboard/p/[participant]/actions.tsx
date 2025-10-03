@@ -3,33 +3,32 @@
 import { prisma } from "@/lib/auth";
 
 export interface assignFeatureProps {
-    participantId: string
-    feature: string
+    pItemId: string
     userId: string
 }
 
 export async function assignFeature(props: assignFeatureProps) {
-    const participant = await prisma.participant.findFirst({
+    const item = await prisma.pItem.findFirst({
         where: {
-            id: props.participantId
+            id: props.pItemId
         }
     })
 
 
-    if (!participant) {
+    if (!item) {
         return false;
     }
 
-    const data: Record<string, any> = {}
-    data[props.feature] = { userId: props.userId, date: new Date().toISOString() }
-
-    const res = await prisma.participant.update({
+    const res = await prisma.pItem.update({
         select: {
             id: true
         },
-        data,
+        data: {
+            deliveredUserId: props.userId,
+            deliveredDate: new Date
+        },
         where: {
-            id: props.participantId
+            id: item.id
         }
     })
 
@@ -37,7 +36,7 @@ export async function assignFeature(props: assignFeatureProps) {
 }
 
 export async function assignCodeQR(participantId: string, code: string) {
-    const participantWithCode = await prisma.participant.findFirst({
+    const participantWithCode = await prisma.p.findFirst({
         where: {
             code
         }
@@ -45,7 +44,7 @@ export async function assignCodeQR(participantId: string, code: string) {
     if (participantWithCode) {
         return "Código ya asignado a otro participante";
     }
-    const participant = await prisma.participant.findFirst({
+    const participant = await prisma.p.findFirst({
         where: {
             id: participantId
         }
@@ -57,7 +56,7 @@ export async function assignCodeQR(participantId: string, code: string) {
         return "El participante ya tiene un código asignado";
     }
 
-    await prisma.participant.update({
+    await prisma.p.update({
         data: {
             code,
             codeDate: new Date()

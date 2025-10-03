@@ -5,7 +5,15 @@ import { notFound } from "next/navigation";
 export default async function ParticipantsDetail({ params }: any) {
     const { participant } = await params;
 
-    const dta = await prisma.participant.findFirst({
+    const dta = await prisma.p.findFirst({
+        select: {
+            id: true,
+            code: true,
+            name: true,
+            items: true,
+            type: true,
+            package: true,
+        },
         where: {
             id: participant
         }
@@ -15,5 +23,7 @@ export default async function ParticipantsDetail({ params }: any) {
         return notFound();
     }
 
-    return <ParticipantMain data={{ ...dta, createAt: dta?.createAt.toISOString(), updateAt: dta.updateAt.toISOString() } as ParticipantData} />
+    const { items, ...participantData } = dta;
+
+    return <ParticipantMain participant={participantData} items={items}/>
 }
