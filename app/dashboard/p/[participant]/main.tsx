@@ -45,20 +45,12 @@ const featuresData: featureDataItem[] = [
 
 interface featureItemProps {
     data: pItem
-    /*
-    feature: string
-    title: string,
-    date?: string
-    icon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>
-    iconColor: string;
-    */
 }
 
 function FeatureItem({ data }: featureItemProps) {
     const feature = featuresData.find((f) => data.type === f.feature) as unknown as featureDataItem;
     const [dateAssigned, setDateAssigned] = useState(data.deliveredDate ?? "");
     const session = useSession();
-    const params = useParams();
 
     if (typeof feature === "undefined") {
         return null;
