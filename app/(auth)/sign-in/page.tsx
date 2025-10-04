@@ -26,7 +26,7 @@ export default function Page() {
 							{
 								title: "Registrate",
 								value: "sign-up",
-								content: <SignUp />,
+								content: <div>Finalizo el registro</div>,
 							},
 						]}
 					/>
