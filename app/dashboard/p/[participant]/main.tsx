@@ -99,6 +99,8 @@ function FeatureItem({ data }: featureItemProps) {
     )
 }
 
+const priority = ["extra", "launch1", "dinner", "breakfast", "launch2"];
+
 interface ParticipantMainProps {
     participant: Pick<p, "id" | "code" | "name" | "type" | "package">
     items: pItem[];
@@ -173,7 +175,18 @@ export function ParticipantMain(props: ParticipantMainProps) {
                 </div>
             </section>
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {props.items.map((x) => <FeatureItem data={x} />)}
+                {
+                    props.items
+                        .sort((a, b) => {
+                            if (a.deliveredDate && !b.deliveredDate) return 1;
+                            if (!a.deliveredDate && b.deliveredDate) return -1;
+
+                            const pa = priority.indexOf(a.type);
+                            const pb = priority.indexOf(b.type);
+                            return (pa === -1 ? Infinity : pa) - (pb === -1 ? Infinity : pb);
+                        })
+                        .map((x) => <FeatureItem data={x} key={x.id} />)
+                }
             </section>
         </div>
     );

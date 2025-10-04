@@ -110,7 +110,7 @@ model pItem {
   id   String  @id
   type String
   name String?
-  p    p       @relation(fields: [pId], references: [id])
+  p    p       @relation(fields: [pId], references: [id], onDelete: Cascade)
   pId  String
 
   deliveredDate   DateTime?

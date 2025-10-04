@@ -65,8 +65,8 @@ export function ParticipantsTable({ data }: { data: p[] }) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {paginatedData.map((p) => (
-                      <TableRow key={p.id}>
+                    {paginatedData.map((p, i) => (
+                      <TableRow key={`${p.id}-${i}`}>
                         <TableCell>
                           <Link href={`/dashboard/p/${p.id}`} className="font-medium hover:underline flex items-center gap-1.5">
                             {p.code && <IconCircleCheck className="size-4 inline-block text-green-500" />}
