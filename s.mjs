@@ -1,170 +1,59 @@
 import { randomUUID } from "crypto";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
+import { PrismaClient } from "@prisma/client"
+import Excel from "exceljs"
 
- const normalizeText = (text = "") => {
-    return text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replaceAll('"', "");
-};
-
-function capitalizeWords(text) {
-  if (typeof text !== "string") return "";
-  return text
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
+const prisma = new PrismaClient();
 
 async function main() {
-    const raw = String(await readFile(join(process.cwd(), "nasa.csv")))
-    const rowList = raw.split("\r\n")
+    const s = await prisma.p.findMany({
+        where: {
+            "OR": [
+                { type: "lider" }, 
+                { type: "mentor" }, 
+                { type: "voluntario" }, 
+            ]
+        },
+        include: {
+            items: true,
+        },
+        orderBy: {
+            type: "desc"
+        }
+    })
+
+
+    const workbook = new Excel.Workbook();
     
-    const packageType = rowList.map((x) => {
-        const d = x.split(",")
+    const sheet = workbook.addWorksheet("Reporte de consumo");
 
-        if (!d[3]) {
-            return undefined
-        }
+    sheet.addRow(["Nombre", "Rol", "Acreditado", "Paquete", "Almuerzo (Dia 1)", "Cena (Dia 1)", "Desayuno (Dia 2)", "Almuerzo (Dia 2)"])
 
-        const Package = normalizeText(d[2])
-        let packageName = Package.startsWith("s") || Package.startsWith("f") ? Package : ''; 
+    for(let p of s) {
+        const l1 = Boolean(p.items.find((x) => x.type == "launch1" && !!x.deliveredDate)?.deliveredDate)
+        const d1 = Boolean(p.items.find((x) => x.type == "dinner" && !!x.deliveredDate)?.deliveredDate)
+        const bf = Boolean(p.items.find((x) => x.type == "breakfast" && !!x.deliveredDate)?.deliveredDate)
+        const l2 = Boolean(p.items.find((x) => x.type == "launch2" && !!x.deliveredDate)?.deliveredDate)
 
-        if (Package.startsWith("s")) {
-           packageName = "strelka";
-        } else if (Package.startsWith("f")) {
-           packageName = "felicette";
-        } else {
-            packageName = "";
-        }
+        sheet.addRow([
+            p.name,
+            p.type,
+            p.code ? "Si": "No",
+            p.package,
+            l1 ? "Si": "No",
+            d1 ? "Si": "No",
+            bf ? "Si": "No",
+            l2 ? "Si": "No",
+        ])
 
-        return {
-            name: capitalizeWords(d[0]),
-            ci: d[1],
-            package: packageName,
-            type: d[3],
-            raw: x
-        }
-    }).filter((x) => !!x)
-
-
-    const glasses = packageType.map((x) => {
-        const d = x.raw.toLowerCase().split(",")
-
-        const items = [];
-
-        if (d[2].startsWith('"')) {
-            if (d[0].startsWith("f")) {
-                items.push({
-                    type: 'extra',
-                    name: 'vaso',
-                })
-                items.push({
-                    type: 'extra',
-                    name: 'vaso',
-                })
-            }
-            if (d[0].startsWith("w")) {
-                items.push({
-                    type: 'extra',
-                    name: 'vaso',
-                })
-            }
-            if (d[0].startsWith("n")) {
-                items.push({
-                    type: 'extra',
-                    name: 'vaso',
-                })
-                items.push({
-                    type: 'extra',
-                    name: 'vaso',
-                })
-            }
-        }
         
-        return {
-            ...x,
-            items
-        };
-    })
+    }
+    
 
+    await workbook.xlsx.writeFile(join(process.cwd(), "report.xlsx"));
 
-    const fPackage = glasses.map((x) => {
-        const d = x.raw.toLowerCase().split(",")
-
-        const p = d[2].replaceAll('"', "")
-
-        if (p.startsWith("p")) {
-            x.items.push({
-                type: 'extra',
-                name: p,
-            })
-        }
-
-        return x;
-    })
-
-    const commonPackage = fPackage.map((x) => {
-        if (x.package.startsWith("f")) {
-            x.items.push({
-                type: 'extra',
-                name: 'polera',
-            })
-        }
-        return x
-    })
-
-    const json = commonPackage.map((x) => {
-
-        if (x.type.startsWith('p')) {
-            x.items.push({
-                type: "extra",
-                name: "botón",
-            })
-            x.items.push({
-                type: "extra",
-                name: "vaso",
-            })
-            x.items.push({
-                type: "extra",
-                name: "stickers",
-            })
-            x.items.push({
-                type: "extra",
-                name: "llaveros",
-            })
-        }
-
-         [
-            "launch1",
-            "dinner",
-            "breakfast",
-            "launch2"
-        ].forEach((c) => {
-            x.items.push({
-                type: c
-            })
-        })
-
-        delete x.raw;
-
-        return {
-            id: randomUUID(),
-            ...x,
-            items: x.items.map((i) => ({
-                id: randomUUID(),
-                ...i
-            }))
-        };
-    })
-
-    // await writeFile(join(process.cwd(), 'p.json'), JSON.stringify(json, null, 2))
-
-    console.log(json[0])
-    console.log(json.length)
+    console.log(s)
 }
 
 main();
